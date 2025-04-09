@@ -136,19 +136,21 @@ export default function Home() {
         <>
           {activeView === "home" && (
             <>
-              <TrendingSlider
-                title="Trending"
-                items={trendingMovies}
-                type="movie"
-                bookmarkedItems={bookmarkedItems}
-                setBookmarkedItems={setBookmarkedItems}
-              />
-              <Recommended
-                title="Recommended for you"
-                items={trendingMovies}
-                bookmarks={bookmarkedItems}
-                layout="grid"
-              />
+             <TrendingSlider
+  title="Trending"
+  items={trendingMovies}
+  isLoading={loading} // Pass loading state
+  bookmarkedItems={bookmarkedItems}
+  setBookmarkedItems={setBookmarkedItems}
+/>
+
+<Recommended
+  title="Recommended for you"
+  items={trendingMovies}
+  isLoading={loading} // Pass loading state
+  bookmarks={bookmarkedItems}
+  layout="grid"
+/>
               <Recommended
                 title="Movies"
                 items={trendingMovies}

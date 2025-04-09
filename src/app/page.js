@@ -62,7 +62,7 @@ export default function Home() {
   
     fetchBookmarks();
     fetchTrendingData();
-  }, []);
+  }, [router]);
   
 
   const handleSearch = () => {

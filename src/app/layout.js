@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   const pathname = usePathname(); // Get current route
-  const isAuthPage = pathname.startsWith("/auth/login") || pathname.startsWith("/auth/signup") || pathname.includes("/details");
+  const isAuthPage = pathname.startsWith("/auth/login") || pathname.startsWith("/auth/signup") || pathname.includes("/details") || pathname.includes("/profile");
 
   return (
     <html lang="en">

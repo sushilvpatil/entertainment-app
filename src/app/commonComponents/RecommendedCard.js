@@ -85,6 +85,8 @@ const Recommended = ({ title, items, layout = "grid", context = "default", bookm
 };
 
 const RecommendedCard = ({ item, isBookmarked, toggleBookmark }) => {
+  const [isLoading, setIsLoading] = useState(false); // State to track loading
+  const [isRemoving, setIsRemoving] = useState(false); // State to track if removing a bookmark
   const year =
     item.type === 'movie'
       ? item.releaseDate?.split('-')[0] || 'N/A'
@@ -97,13 +99,20 @@ const RecommendedCard = ({ item, isBookmarked, toggleBookmark }) => {
     router.push(`/details/${item.type}/${item.tmdbId}?data=${encodedItem}`);
   };
 
-  const handleBookmarkClick = (e) => {
+  const handleBookmarkClick = async (e) => {
     e.stopPropagation(); // Prevent navigation when clicking the bookmark
-    toggleBookmark(item);
+    setIsLoading(true); // Start loading
+    setIsRemoving(isBookmarked); // Set removing state based on current bookmark status
+    await toggleBookmark(item); // Wait for the toggleBookmark function to complete
+    setIsLoading(false); // Stop loading
+    setIsRemoving(false); // Reset removing state
   };
 
   return (
-    <div className="flex flex-col w-[160px] sm:w-[180px] md:w-[200px] group" onClick={handleCardClick}>
+    <div
+      className="flex flex-col w-[160px] sm:w-[180px] md:w-[200px] group"
+      onClick={handleCardClick}
+    >
       <div className="relative rounded-lg overflow-hidden w-full h-[200px] sm:h-[220px] md:h-[240px] transition-all duration-300">
         <img
           src={
@@ -123,8 +132,17 @@ const RecommendedCard = ({ item, isBookmarked, toggleBookmark }) => {
               ? 'bg-white text-black'
               : 'bg-gray-700 text-white hover:bg-gray-600'
           }`}
+          disabled={isLoading} // Disable button while loading
         >
-          {isBookmarked ? (
+          {isLoading ? (
+            <div
+              className={`loader w-4 h-4 border-2 ${
+                isRemoving
+                  ? 'border-black border-t-transparent' // Black loader for removing
+                  : 'border-white border-t-transparent' // White loader for adding
+              } rounded-full animate-spin`}
+            ></div>
+          ) : isBookmarked ? (
             <FaBookmark size={14} />
           ) : (
             <FaRegBookmark color="white" size={14} />
@@ -154,7 +172,11 @@ const RecommendedCard = ({ item, isBookmarked, toggleBookmark }) => {
         <div className="flex items-center text-gray-400 text-xs gap-2 opacity-80">
           <span>{year}</span>
           <span className="flex items-center gap-1">
-            · {item.type === 'movie' ? <MdLocalMovies size={12} /> : <PiTelevisionBold size={12} />}
+            · {item.type === 'movie' ? (
+              <MdLocalMovies size={12} />
+            ) : (
+              <PiTelevisionBold size={12} />
+            )}
             {item.type === 'movie' ? 'Movie' : 'TV Series'}
           </span>
           <span className="px-1 rounded-md">· {item.rating || 'PG'}</span>

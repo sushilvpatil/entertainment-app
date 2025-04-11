@@ -89,15 +89,20 @@ export default function Home() {
     setIsSearching(true);
   };
 
-  if (loading) return <div className="text-white text-center">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#0F111A] text-white">
+        Loading...
+      </div>
+    );
 
   return (
-    <div className="p-4 mt-1  md:p-8 bg-[#0F111A] w-screen h-screen  lg:ml-19  md:ml-0 sm:ml-0 scrollbar-hide">
+    <div className="p-4 mt-1 md:p-8 bg-[#0F111A] w-screen h-screen lg:ml-19 md:ml-0 sm:ml-0 scrollbar-hide pt-20">
       {/* Sidebar */}
-      <Sidebar  onNavigate={(view) => setActiveView(view)} user={UserData?.user} />
-
+      <Sidebar onNavigate={(view) => setActiveView(view)} user={UserData?.user} />
+  
       {/* Search Bar */}
-      <div className="mb-6 ">
+      <div className="mb-6">
         <div className="flex items-center gap-2">
           <FaSearch className="text-white mb-2" size={16} />
           <div
@@ -118,7 +123,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-
+  
       {/* Search Results Section */}
       {isSearching ? (
         <div>
@@ -136,21 +141,20 @@ export default function Home() {
         <>
           {activeView === "home" && (
             <>
-             <TrendingSlider
-  title="Trending"
-  items={trendingMovies}
-  isLoading={loading} // Pass loading state
-  bookmarkedItems={bookmarkedItems}
-  setBookmarkedItems={setBookmarkedItems}
-/>
-
-<Recommended
-  title="Recommended for you"
-  items={trendingMovies}
-  isLoading={loading} // Pass loading state
-  bookmarks={bookmarkedItems}
-  layout="grid"
-/>
+              <TrendingSlider
+                title="Trending"
+                items={trendingMovies}
+                isLoading={loading}
+                bookmarkedItems={bookmarkedItems}
+                setBookmarkedItems={setBookmarkedItems}
+              />
+              <Recommended
+                title="Recommended for you"
+                items={trendingMovies}
+                isLoading={loading}
+                bookmarks={bookmarkedItems}
+                layout="grid"
+              />
               <Recommended
                 title="Movies"
                 items={trendingMovies}

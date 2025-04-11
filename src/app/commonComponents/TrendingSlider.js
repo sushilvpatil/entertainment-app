@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { FaRegBookmark, FaBookmark } from 'react-icons/fa';
 import { MdLocalMovies, MdTv } from 'react-icons/md';
 import { postRequest } from '@/api/postRequest';
@@ -17,11 +17,17 @@ const TrendingSlider = ({
   setBookmarkedItems,
 }) => {
   const router = useRouter();
+  const [loadingStates, setLoadingStates] = useState({}); // Track loading state for each item
+  const [removingStates, setRemovingStates] = useState({}); // Track removing state for each item
 
   const toggleBookmark = async (item) => {
     const isBookmarked = bookmarkedItems.some(
       (bookmark) => String(bookmark.itemId) === String(item.tmdbId)
     );
+
+    // Set loading state for the current item
+    setLoadingStates((prev) => ({ ...prev, [item.tmdbId]: true }));
+    setRemovingStates((prev) => ({ ...prev, [item.tmdbId]: isBookmarked }));
 
     if (isBookmarked) {
       try {
@@ -57,6 +63,10 @@ const TrendingSlider = ({
         }
       }
     }
+
+    // Reset loading state for the current item
+    setLoadingStates((prev) => ({ ...prev, [item.tmdbId]: false }));
+    setRemovingStates((prev) => ({ ...prev, [item.tmdbId]: false }));
   };
 
   const handleCardClick = (item) => {
@@ -73,6 +83,8 @@ const TrendingSlider = ({
           const isBookmarked = bookmarkedItems.some(
             (b) => String(b.itemId) === String(item.tmdbId || item.id)
           );
+          const isLoading = loadingStates[item.tmdbId]; // Check if the current item is loading
+          const isRemoving = removingStates[item.tmdbId]; // Check if the current item is being removed
 
           return (
             <div
@@ -103,8 +115,15 @@ const TrendingSlider = ({
                     ? 'bg-white text-black'
                     : 'bg-gray-700 text-white hover:bg-gray-600'
                 }`}
+                disabled={isLoading} // Disable button while loading
               >
-                {isBookmarked ? (
+                {isLoading ? (
+                  <div
+                    className={`loader w-4 h-4 border-2 border-t-transparent ${
+                      isRemoving ? 'loader-black' : 'loader-white'
+                    } rounded-full animate-spin`}
+                  ></div> // Loader with dynamic color
+                ) : isBookmarked ? (
                   <FaBookmark size={16} />
                 ) : (
                   <FaRegBookmark size={16} />

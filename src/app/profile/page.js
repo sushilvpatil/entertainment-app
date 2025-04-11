@@ -10,6 +10,8 @@ const ProfilePage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); // Loader state for Save button
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // Loader state for Logout button
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,12 +20,10 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
-    // Safely access localStorage after the component mounts
     const locadata = localStorage.getItem("profileData");
-    const data = locadata ? JSON.parse(locadata) : {}; // Parse or use an empty object
+    const data = locadata ? JSON.parse(locadata) : {};
     console.log(data, "Profile data from localStorage");
 
-    // Set initial form data and image preview
     setFormData({
       name: data?.name || "",
       email: data?.email || "",
@@ -31,7 +31,7 @@ const ProfilePage = () => {
       newPassword: "",
     });
     setImagePreview(data?.profileImage || null);
-  }, []); // Run only once when the component mounts
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,48 +54,47 @@ const ProfilePage = () => {
   };
 
   const handleSave = async () => {
+    setIsSaving(true); // Start loader
     try {
       let profileImageURL = "";
-  
-      // 1. Upload image if selected
+
       if (imageFile) {
         const uploadFormData = new FormData();
         uploadFormData.append("file", imageFile);
-  
+
         const uploadRes = await fetch("https://api.escuelajs.co/api/v1/files/upload", {
           method: "POST",
           body: uploadFormData,
         });
-  
+
         if (!uploadRes.ok) {
           throw new Error("Image upload failed.");
         }
-  
+
         const uploadData = await uploadRes.json();
         console.log(uploadData, "Image upload response");
         profileImageURL = uploadData.location;
       }
-  
-      // 2. Build update payload
+
       const payload = {
         name: formData.name,
         email: formData.email,
       };
-  
+
       if (profileImageURL) {
         payload.profileImage = profileImageURL;
       }
-  
+
       if (showPasswordChange) {
         if (!formData.prevPassword || !formData.newPassword) {
           toast.error("Please enter both previous and new passwords.");
+          setIsSaving(false); // Stop loader
           return;
         }
         payload.currentPassword = formData.prevPassword;
         payload.newPassword = formData.newPassword;
       }
-  
-      // 3. Send PUT request to update profile
+
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
       const updateRes = await fetch(API_BASE_URL + "/users/update", {
         method: "PUT",
@@ -105,7 +104,7 @@ const ProfilePage = () => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       if (!updateRes.ok) {
         const errorData = await updateRes.json();
         if (updateRes.status === 400 && errorData.message === "Current password is incorrect") {
@@ -113,10 +112,10 @@ const ProfilePage = () => {
         } else {
           throw new Error("Something went wrong!");
         }
+        setIsSaving(false); // Stop loader
         return;
       }
-  
-      // 4. Save to localStorage for Sidebar sync
+
       const updatedUser = {
         name: payload.name,
         email: payload.email,
@@ -124,26 +123,37 @@ const ProfilePage = () => {
       };
       localStorage.setItem("profileData", JSON.stringify(updatedUser));
       window.dispatchEvent(new Event("storage"));
-  
+
       toast.success("Profile updated successfully!");
       router.push("/");
     } catch (err) {
       console.error(err);
-      if (err.message === "Current password is incorrect") {
-        toast.error("Current password is incorrect");
-      } else {
-        toast.error("Something went wrong!");
-      }
+      toast.error("Something went wrong!");
+    } finally {
+      setIsSaving(false); // Stop loader
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true); // Start loader
+    try {
+      localStorage.removeItem("authToken");
+      router.push("/auth/login");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to logout!");
+    } finally {
+      setIsLoggingOut(false); // Stop loader
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#10141E]  text-white p-6">
+    <div className="min-h-screen bg-[#10141E] text-white p-6">
       <div className="max-w-md mx-auto bg-[#161D2F] p-6 rounded-xl shadow-lg">
         <div className="flex flex-col items-center gap-4">
           <div className="relative cursor-pointer" onClick={handleImageClick}>
             <img
-              src={imagePreview || "data:image/png;base64,..."} // Fallback image
+              src={imagePreview || "data:image/png;base64,..."}
               alt="Profile"
               className="w-24 h-24 rounded-full border-4 border-red-500"
             />
@@ -219,18 +229,27 @@ const ProfilePage = () => {
 
             <button
               onClick={handleSave}
-              className="mt-4 w-full bg-red-500 hover:text-black hover:bg-white hover:text-black transition text-white py-2 rounded font-medium"
+              className="mt-4 w-full bg-red-500 hover:text-black hover:bg-white transition text-white py-2 rounded font-medium flex items-center justify-center"
+              disabled={isSaving} // Disable button while saving
             >
-              Save
+              {isSaving ? (
+                <div className="loader w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+              ) : (
+                "Save"
+              )}
             </button>
 
             <button
-              onClick={()=>{localStorage.removeItem("authToken"); router.push("/auth/login")}}
-              className="mt-4 w-full bg-red-500 hover:text-black hover:bg-white hover:text-black transition text-white py-2 rounded font-medium"
+              onClick={handleLogout}
+              className="mt-4 w-full bg-red-500 hover:text-black hover:bg-white transition text-white py-2 rounded font-medium flex items-center justify-center"
+              disabled={isLoggingOut} // Disable button while logging out
             >
-              Logout
+              {isLoggingOut ? (
+                <div className="loader w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+              ) : (
+                "Logout"
+              )}
             </button>
-
           </div>
         </div>
       </div>

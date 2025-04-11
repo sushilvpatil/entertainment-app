@@ -1,36 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+🎥 Entertainment App Frontend
+This is the frontend of the Entertainment App — a responsive, user-personalized platform for browsing trending and recommended movies & TV shows, bookmarking favorites, and managing profiles.
 
-## Getting Started
+Built using:
 
-First, run the development server:
+Next.js 13+ (App Router)
 
-```bash
+Tailwind CSS
+
+React Hooks
+
+TMDB API (for movie & TV content)
+
+Custom Express.js backend for authentication and bookmarks
+
+✨ Features
+🧑‍💻 User Authentication
+Login / Signup with JWT token
+
+Secure route access (e.g., homepage, profile)
+
+🔍 Search & Filter
+Real-time client-side filtering
+
+Search movies/TV shows by title
+
+📌 Bookmarks
+Toggle bookmark for any media
+
+Saved bookmarks sync with backend
+
+Status reflects across app (recommended, trending)
+
+🧭 Navigation & Layout
+Fully responsive Sidebar navigation
+
+Active tab highlighting
+
+Profile avatar and logout on Sidebar bottom
+
+📱 Mobile-First Responsive Design
+Adaptive layout for mobile, tablet, and desktop
+
+Sidebar collapses to topbar on smaller devices
+
+Grid adapts from 2-cols (mobile) to 5-cols (desktop)
+
+🧾 Profile Management
+View and update user profile (name, email, profile picture)
+
+Change password
+
+Profile image upload (via third-party API)
+
+🧙 Movie & TV Info Pages
+Detailed view with:
+
+Title, synopsis, rating
+
+Genre, release year, cast list
+
+External links (website, IMDb)
+
+🧩 Tech Stack
+Layer	Technology
+Framework	Next.js (App Router)
+Styling	Tailwind CSS
+Auth & API	Custom backend (Express + JWT)
+Toasts	React-Toastify
+UI Icons	React-Icons, Lucide, HeroIcons
+Image Upload	EscuelaJS File Upload API
+Data Provider	TMDB API
+
+
+ Folder Structure
+
+entertainment-app-frontend/
+├── app/
+│   ├── page.js                # Home page (trending, recommended)
+│   ├── auth/                  # Login & Signup
+│   ├── profile/               # User profile
+│   ├── details/               # Movie/TV info page
+│
+├── commonComponents/
+│   ├── Sidebar.js             # Navigation bar (responsive)
+│   ├── RecommendedCard.js     # Vertical card layout
+│   ├── TrendingSlider.js      # Horizontal scroll slider
+│   ├── Bookmarks.js           # Bookmarked content grid
+│
+├── api/                       # Custom fetch utils (getRequest, postRequest)
+├── styles/                    # Tailwind and global CSS
+
+
+🚀 Getting Started
+npm install
+
+
+
+🌐 Setup Environment
+Create a .env.local file with:
+NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain.com/api
+NEXT_PUBLIC_IMAGE_BASE_URL=https://image.tmdb.org/t/p/w500
+
+🏁 Run the Development Server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+visit the app
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+🔐 Authentication Flow
+On login/signup, JWT token is stored in localStorage
 
-To learn more about Next.js, take a look at the following resources:
+Protected routes (Home, Profile, Bookmarks) are checked on load
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Token is attached to all authorized fetch requests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🖼️ Image Upload
+Profile image is uploaded to:
 
-## Deploy on Vercel
+https://api.escuelajs.co/api/v1/files/upload
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+📱 Responsiveness
+View	Layout Adjustments
+Mobile	Sidebar shifts to top, 2-column grids, scrollable sliders
+Tablet	3-column grids, compact navbar
+Desktop	5-column grid, Sidebar visible on left
+
+
+🙌 Contributions
+We welcome feedback, issues, and pull requests!
+
+
+

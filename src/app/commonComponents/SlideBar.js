@@ -14,8 +14,10 @@ const Sidebar = ({ onNavigate = () => {}, user }) => {
 
     if (iconName === "profile") {
       // Save user data in localStorage
+      if(user){
       localStorage.setItem("profileData", JSON.stringify(user));
       router.push("/profile");
+      }
     } else {
       onNavigate(iconName);
     }

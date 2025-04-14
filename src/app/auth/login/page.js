@@ -6,6 +6,7 @@ import { postRequest } from "@/api/postRequest";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { MdMovie } from "react-icons/md";
+import { useEffect } from "react";
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -39,6 +40,14 @@ const Login = () => {
     return true;
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      // If the user is already logged in, redirect to the main page
+      router.replace("/");
+    }
+  }, [router]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return; // ✅ Validate before API call
@@ -54,7 +63,7 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(user));
   
       toast.success(message);
-      router.push("/"); // ✅ Redirect to Home
+      router.replace("/"); // ✅ Redirect to Home
     } catch (err) {
       const errorMessage = err.data?.message || "Something went wrong!";
       toast.error(errorMessage);

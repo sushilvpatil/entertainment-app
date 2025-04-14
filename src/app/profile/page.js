@@ -20,7 +20,15 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
+
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/auth/login");
+      return; // Stop further execution
+    }
+
     const locadata = localStorage.getItem("profileData");
+    console.log(locadata, "Profile data from localStorage");
     const data = locadata ? JSON.parse(locadata) : {};
     console.log(data, "Profile data from localStorage");
 
